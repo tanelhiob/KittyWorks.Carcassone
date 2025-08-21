@@ -6,5 +6,6 @@ public class Tile
 {
     [Key]
     public int Id { get; set; }
-    public TileType Type { get; set; }
+    public TileType[] Edges { get; set; } = new TileType[4]; // N,E,S,W
+    public bool HasChurch { get; set; }
 }

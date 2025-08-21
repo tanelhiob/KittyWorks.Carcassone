@@ -21,13 +21,37 @@ else
     @if (Model.NextTile != null)
     {
         <div class="mb-3">
-            <div class="tile tile-@Model.NextTile.Type.ToString().ToLower()" id="nextTile">@Model.NextTile.Type.ToString()[0]</div>
+            <div class="tile" id="nextTile">
+                @{ var dirs = new[]{"north","east","south","west"}; }
+                @for (int i = 0; i < 4; i++)
+                {
+                    <div class="edge @dirs[i] edge-@Model.NextTile.Edges[i].ToString().ToLower()"></div>
+                }
+                @if (Model.NextTile.HasChurch)
+                {
+                    <div class="edge center edge-church"></div>
+                }
+            </div>
             <button id="rotateBtn" class="btn btn-secondary btn-sm mt-2">Rotate</button>
         </div>
         <form method="post" id="placeForm">
             <input type="hidden" asp-for="X" />
             <input type="hidden" asp-for="Y" />
             <input type="hidden" asp-for="Rotation" />
+            <div class="mb-2">
+                <select asp-for="Piece" class="form-select form-select-sm mb-1">
+                    <option value="">No piece</option>
+                    <option value="Farmer">Farmer</option>
+                    <option value="Bishop">Bishop</option>
+                </select>
+                <select asp-for="Feature" class="form-select form-select-sm">
+                    <option value="">Feature</option>
+                    <option value="Road">Road</option>
+                    <option value="City">City</option>
+                    <option value="Field">Field</option>
+                    <option value="Church">Church</option>
+                </select>
+            </div>
         </form>
     }
     else
@@ -49,7 +73,21 @@ else
             <td class="board-cell @(tile == null ? "empty" : "")" data-x="@x" data-y="@y">
                 @if (tile != null)
                 {
-                    <div class="tile tile-@tile.Type.ToString().ToLower()" style="transform:rotate(@(tile.Rotation)deg)">@tile.Type.ToString()[0]</div>
+                    <div class="tile" style="transform:rotate(@(tile.Rotation)deg)">
+                        @{ var dirsPlaced = new[]{"north","east","south","west"}; }
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            <div class="edge @dirsPlaced[i] edge-@tile.Tile.Edges[i].ToString().ToLower()"></div>
+                        }
+                        @if (tile.Tile.HasChurch)
+                        {
+                            <div class="edge center edge-church"></div>
+                        }
+                        @if (tile.Piece != null)
+                        {
+                            <div class="piece piece-@tile.Piece.ToString().ToLower()">@tile.Piece.ToString()[0]</div>
+                        }
+                    </div>
                 }
             </td>
         }

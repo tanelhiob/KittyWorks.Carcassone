@@ -23,6 +23,10 @@ public class GameModel : PageModel
     public int Y { get; set; }
     [BindProperty]
     public int Rotation { get; set; }
+    [BindProperty]
+    public PieceType? Piece { get; set; }
+    [BindProperty]
+    public TileType? Feature { get; set; }
 
     public void OnGet()
     {
@@ -32,7 +36,7 @@ public class GameModel : PageModel
 
     public IActionResult OnPost()
     {
-        _gameService.PlaceTile(X, Y, Rotation);
+        _gameService.PlaceTile(X, Y, Rotation, Piece, Feature);
         CurrentGame = _gameService.GetGame();
         NextTile = _gameService.NextTile(CurrentGame);
         return Page();
