@@ -37,7 +37,7 @@ public class GameService
         var tiles = new List<Tile>();
         for (int i = 0; i < 20; i++)
         {
-            tiles.Add(new Tile { Type = (TileType)_random.Next(0, 3) });
+            tiles.Add(new Tile { Type = (TileType)_random.Next(0, 4) });
         }
         return tiles;
     }
@@ -73,6 +73,15 @@ public class GameService
             Rotation = rotation
         });
         game.Deck.RemoveAt(0);
+
+        var currentPlayer = game.Players[game.CurrentPlayerIndex];
+        currentPlayer.Score += next.Type switch
+        {
+            TileType.City => 2,
+            TileType.Road => 2,
+            _ => 1
+        };
+
         game.CurrentPlayerIndex = (game.CurrentPlayerIndex + 1) % game.Players.Count;
         _db.SaveChanges();
         return true;

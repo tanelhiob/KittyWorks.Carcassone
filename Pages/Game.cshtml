@@ -11,32 +11,23 @@
 }
 else
 {
-    <h2>Current Player: @game.Players[game.CurrentPlayerIndex].Name</h2>
+    <div class="mb-3">
+        @foreach (var p in game.Players)
+        {
+            <span class="me-3"><strong>@p.Name</strong>: @p.Score</span>
+        }
+    </div>
 
     @if (Model.NextTile != null)
     {
-        <p>Next tile: @Model.NextTile.Type</p>
-        <form method="post" class="row g-3">
-            <div class="col-auto">
-                <label asp-for="X" class="form-label">X</label>
-                <input asp-for="X" class="form-control" />
-            </div>
-            <div class="col-auto">
-                <label asp-for="Y" class="form-label">Y</label>
-                <input asp-for="Y" class="form-control" />
-            </div>
-            <div class="col-auto">
-                <label asp-for="Rotation" class="form-label">Rotation</label>
-                <select asp-for="Rotation" class="form-select">
-                    <option value="0">0°</option>
-                    <option value="90">90°</option>
-                    <option value="180">180°</option>
-                    <option value="270">270°</option>
-                </select>
-            </div>
-            <div class="col-auto align-self-end">
-                <button type="submit" class="btn btn-primary mb-3">Place Tile</button>
-            </div>
+        <div class="mb-3">
+            <div class="tile tile-@Model.NextTile.Type.ToString().ToLower()" id="nextTile">@Model.NextTile.Type.ToString()[0]</div>
+            <button id="rotateBtn" class="btn btn-secondary btn-sm mt-2">Rotate</button>
+        </div>
+        <form method="post" id="placeForm">
+            <input type="hidden" asp-for="X" />
+            <input type="hidden" asp-for="Y" />
+            <input type="hidden" asp-for="Rotation" />
         </form>
     }
     else
@@ -44,35 +35,46 @@ else
         <p>Deck empty. Game over.</p>
     }
 
-    <h3>Board</h3>
-    @if (game.PlacedTiles.Any())
+    var minX = game.PlacedTiles.Any() ? game.PlacedTiles.Min(t => t.X) - 1 : -1;
+    var maxX = game.PlacedTiles.Any() ? game.PlacedTiles.Max(t => t.X) + 1 : 1;
+    var minY = game.PlacedTiles.Any() ? game.PlacedTiles.Min(t => t.Y) - 1 : -1;
+    var maxY = game.PlacedTiles.Any() ? game.PlacedTiles.Max(t => t.Y) + 1 : 1;
+    <table class="board">
+    @for (var y = maxY; y >= minY; y--)
     {
-        var minX = game.PlacedTiles.Min(t => t.X);
-        var maxX = game.PlacedTiles.Max(t => t.X);
-        var minY = game.PlacedTiles.Min(t => t.Y);
-        var maxY = game.PlacedTiles.Max(t => t.Y);
-        <table class="table table-bordered">
-        @for (var y = maxY; y >= minY; y--)
+        <tr>
+        @for (var x = minX; x <= maxX; x++)
         {
-            <tr>
-            @for (var x = minX; x <= maxX; x++)
-            {
-                var tile = game.PlacedTiles.FirstOrDefault(t => t.X == x && t.Y == y);
-                if (tile != null)
+            var tile = game.PlacedTiles.FirstOrDefault(t => t.X == x && t.Y == y);
+            <td class="board-cell @(tile == null ? "empty" : "")" data-x="@x" data-y="@y">
+                @if (tile != null)
                 {
-                    <td>@tile.Type (@tile.Rotation)&deg;</td>
+                    <div class="tile tile-@tile.Type.ToString().ToLower()" style="transform:rotate(@(tile.Rotation)deg)">@tile.Type.ToString()[0]</div>
                 }
-                else
-                {
-                    <td>&nbsp;</td>
-                }
-            }
-            </tr>
+            </td>
         }
-        </table>
+        </tr>
     }
-    else
-    {
-        <p>No tiles placed yet.</p>
-    }
+    </table>
+}
+
+@section Scripts {
+<script>
+let rotation = 0;
+const rotateBtn = document.getElementById('rotateBtn');
+rotateBtn?.addEventListener('click', e => {
+    e.preventDefault();
+    rotation = (rotation + 90) % 360;
+    document.getElementById('Rotation').value = rotation;
+    document.getElementById('nextTile').style.transform = `rotate(${rotation}deg)`;
+});
+
+document.querySelectorAll('.board-cell.empty').forEach(cell => {
+    cell.addEventListener('click', () => {
+        document.getElementById('X').value = cell.dataset.x;
+        document.getElementById('Y').value = cell.dataset.y;
+        document.getElementById('placeForm').submit();
+    });
+});
+</script>
 }

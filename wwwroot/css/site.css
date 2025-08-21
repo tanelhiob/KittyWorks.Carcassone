@@ -29,3 +29,40 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+
+.board {
+  border-collapse: collapse;
+}
+
+.board-cell {
+  width: 50px;
+  height: 50px;
+  padding: 0;
+  border: 1px solid #999;
+}
+
+.tile {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-weight: bold;
+}
+
+.tile-city {
+  background-color: #f9c74f;
+}
+
+.tile-road {
+  background-color: #90be6d;
+}
+
+.tile-field {
+  background-color: #f94144;
+}
+
+.tile-church {
+  background-color: #577590;
+}

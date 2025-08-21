@@ -4,5 +4,6 @@ public enum TileType
 {
     City,
     Road,
-    Field
+    Field,
+    Church
 }
