@@ -1,0 +1,24 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home";
+}
+
+<h1>Carcassone Hotseat</h1>
+
+<form method="post" class="mt-3">
+    <div class="mb-3">
+        <label asp-for="Player1" class="form-label">Player 1</label>
+        <input asp-for="Player1" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Player2" class="form-label">Player 2</label>
+        <input asp-for="Player2" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Start Game</button>
+</form>
+
+@if (Model.HasGame)
+{
+    <a href="/Game" class="btn btn-secondary mt-3">Continue Current Game</a>
+}

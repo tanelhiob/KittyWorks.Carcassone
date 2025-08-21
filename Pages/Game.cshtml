@@ -1,0 +1,78 @@
+@page
+@model GameModel
+@{
+    ViewData["Title"] = "Game";
+    var game = Model.CurrentGame;
+}
+
+@if (game is null)
+{
+    <p>No game in progress.</p>
+}
+else
+{
+    <h2>Current Player: @game.Players[game.CurrentPlayerIndex].Name</h2>
+
+    @if (Model.NextTile != null)
+    {
+        <p>Next tile: @Model.NextTile.Type</p>
+        <form method="post" class="row g-3">
+            <div class="col-auto">
+                <label asp-for="X" class="form-label">X</label>
+                <input asp-for="X" class="form-control" />
+            </div>
+            <div class="col-auto">
+                <label asp-for="Y" class="form-label">Y</label>
+                <input asp-for="Y" class="form-control" />
+            </div>
+            <div class="col-auto">
+                <label asp-for="Rotation" class="form-label">Rotation</label>
+                <select asp-for="Rotation" class="form-select">
+                    <option value="0">0°</option>
+                    <option value="90">90°</option>
+                    <option value="180">180°</option>
+                    <option value="270">270°</option>
+                </select>
+            </div>
+            <div class="col-auto align-self-end">
+                <button type="submit" class="btn btn-primary mb-3">Place Tile</button>
+            </div>
+        </form>
+    }
+    else
+    {
+        <p>Deck empty. Game over.</p>
+    }
+
+    <h3>Board</h3>
+    @if (game.PlacedTiles.Any())
+    {
+        var minX = game.PlacedTiles.Min(t => t.X);
+        var maxX = game.PlacedTiles.Max(t => t.X);
+        var minY = game.PlacedTiles.Min(t => t.Y);
+        var maxY = game.PlacedTiles.Max(t => t.Y);
+        <table class="table table-bordered">
+        @for (var y = maxY; y >= minY; y--)
+        {
+            <tr>
+            @for (var x = minX; x <= maxX; x++)
+            {
+                var tile = game.PlacedTiles.FirstOrDefault(t => t.X == x && t.Y == y);
+                if (tile != null)
+                {
+                    <td>@tile.Type (@tile.Rotation)&deg;</td>
+                }
+                else
+                {
+                    <td>&nbsp;</td>
+                }
+            }
+            </tr>
+        }
+        </table>
+    }
+    else
+    {
+        <p>No tiles placed yet.</p>
+    }
+}
